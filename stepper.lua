@@ -47,7 +47,7 @@ do
     motor_params.step_interval = 5 -- milliseconds decides the speed. smaller the interval, higher the speed.
     motor_params.desired_steps = 2500
     motor_params.direction = FORWARD
-    motor_params.timer_to_use = 0
+    motor_params.timer_to_use = tmr.create()
     motor_params.callback = nil
 
 
@@ -79,7 +79,7 @@ do
         --increment the counter and check if there are steps to execute
         step_counter = step_counter + 1
         if step_counter > motor_params.desired_steps then
-            tmr.stop(motor_params.timer_to_use)
+            motor_params.timer_to_use:stop()
             node.task.post(2, motor_params.callback) -- node.task.HIGH_PRIORITY = 2
         else
             updatePhaseForNextStep();
@@ -123,17 +123,16 @@ do
         -- direction = stepper.FORWARD or stepper.REVERSE
         -- desired_steps = number between 0 to infinity - 2500 is default
         -- interval = time delay in milliseconds between steps, smaller self number is, faster the motor rotates . 5 is default
-    local rotate = function ( direction, desired_steps, interval, timer_to_use, callback)
+    local rotate = function ( direction, desired_steps, interval, callback )
         motor_params.step_interval = interval -- milliseconds decides the speed. smaller the interval, higher the speed.
         motor_params.desired_steps = desired_steps
         motor_params.direction = direction
-        motor_params.timer_to_use = timer_to_use
         motor_params.callback = callback
         
         step_counter  = 0
         phase         = 1
         
-        tmr.alarm(motor_params.timer_to_use, motor_params.step_interval, REPEATING_TIMER, single_step)
+        motor_params.timer_to_use:alarm(motor_params.step_interval, tmr.ALARM_AUTO, single_step)
     end
 
     stepper = {
