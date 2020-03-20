@@ -49,7 +49,7 @@ do
     motor_params.direction = FORWARD
     motor_params.timer_to_use = tmr.create()
     motor_params.callback = nil
-
+    motor_params.reset_pins = gpio.LOW -- if not nil reset pins to this value when rotate() is done
 
     ---------------------------------------------------------------------------------------
     -- rotation state data
@@ -80,6 +80,11 @@ do
         step_counter = step_counter + 1
         if step_counter > motor_params.desired_steps then
             motor_params.timer_to_use:stop()
+            if motor_params.reset_pins ~= nil then
+                for index,mcu_pin in ipairs(motor_params.pins) do
+                    gpio.write(mcu_pin, motor_params.reset_pins)
+                end
+            end
             node.task.post(2, motor_params.callback) -- node.task.HIGH_PRIORITY = 2
         else
             updatePhaseForNextStep();
