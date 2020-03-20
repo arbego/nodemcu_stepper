@@ -63,11 +63,6 @@ do
     -- Private ( Auxillary and Utility ) methods
     ---------------------------------------------------------------------------------------
 
-    -- utility method do calculate modulo. has same effect as a%b in java,c,c++
-    local mod = function (a,b)
-        return a - math.floor(a/b)*b
-    end
-
     local updatePhaseForNextStep = function ()
         --increment phase in given direction
         phase = phase + motor_params.direction
@@ -107,7 +102,7 @@ do
         -- D7 < ------ > IN3
         -- D8 < ------ > IN4
     local init = function ( pins )
-        if not pins or not interval then
+        if not pins then
             print('Init params missing !!! initializing with defaults')
             local motor_pins = motor_params.pins;
             for i,pin in ipairs( motor_pins ) do
